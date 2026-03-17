@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useAuth } from './AuthContext'
+import { useAuth } from '../context/AuthContext'
 import './Login.css'
-import logo from './assets/logotipo.png'
+import logo from '../assets/logotipo.png'
 
 function Login() {
   const [username, setUsername] = useState('')

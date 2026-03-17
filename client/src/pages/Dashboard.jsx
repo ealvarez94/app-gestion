@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react'
-import api from './api'
-import { useAuth } from './AuthContext'
+import { useAuth } from '../hooks/useAuth'
+import { useApi } from '../hooks/useApi'
+import Layout from '../components/layout/Layout'
+import Button from '../components/common/Button'
+import Input from '../components/common/Input'
 import './Dashboard.css'
 
 function Dashboard() {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
+  const { get, post, put, delete: deleteRequest, loading, error } = useApi()
   const [renovaciones, setRenovaciones] = useState([])
   const [totalFacturacion, setTotalFacturacion] = useState(0)
-  const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState({ search: '', mes: '', year: '' })
   const [formData, setFormData] = useState({
     nombre_cliente: '',
@@ -27,20 +30,17 @@ function Dashboard() {
 
   // Cargar renovaciones
   const cargarRenovaciones = async () => {
-    setLoading(true)
     try {
       const params = new URLSearchParams()
       if (filter.search) params.append('search', filter.search)
       if (filter.mes) params.append('mes', filter.mes)
       if (filter.year) params.append('year', filter.year)
 
-      const response = await api.get(`/api/renovaciones?${params.toString()}`)
-      setRenovaciones(response.data.renovaciones)
-      setTotalFacturacion(response.data.totalFacturacion)
+      const data = await get(`/api/renovaciones?${params.toString()}`)
+      setRenovaciones(data.renovaciones)
+      setTotalFacturacion(data.totalFacturacion)
     } catch (error) {
       console.error('Error al cargar renovaciones:', error)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -116,18 +116,8 @@ function Dashboard() {
   }
 
   return (
-    <div className="dashboard">
-      <header className="dashboard-header">
-        <div className="header-content">
-          <h1>📊 Dashboard de Renovaciones</h1>
-          <div className="user-info">
-            <span>👤 {user?.username}</span>
-            <button onClick={logout} className="btn-logout">Cerrar Sesión</button>
-          </div>
-        </div>
-      </header>
-
-      <main className="dashboard-main">
+    <Layout>
+      <div className="dashboard">
         {/* Total Facturación */}
         <div className="total-facturacion">
           <h2>Total de Facturación</h2>
@@ -197,12 +187,12 @@ function Dashboard() {
         )}
 
         {/* Botón Agregar */}
-        <button
+        <Button
           onClick={() => setShowForm(!showForm)}
-          className="btn-agregar"
+          variant="primary"
         >
           {showForm ? '✖ Cancelar' : '➕ Nueva Renovación'}
-        </button>
+        </Button>
 
         {/* Formulario */}
         {showForm && (
@@ -319,9 +309,9 @@ function Dashboard() {
               />
             </div>
 
-            <button type="submit" className="btn-submit">
+            <Button type="submit" variant="primary">
               Crear Renovación
-            </button>
+            </Button>
           </form>
         )}
 
@@ -392,8 +382,8 @@ function Dashboard() {
             </div>
           )}
         </div>
-      </main>
-    </div>
+      </div>
+    </Layout>
   )
 }
 
