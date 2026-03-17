@@ -1,20 +1,38 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 
-const AuthContext = createContext()
+export const AuthContext = createContext()
+
+const getStoredUser = () => {
+  const savedUser = localStorage.getItem('user')
+
+  if (!savedUser) {
+    return null
+  }
+
+  try {
+    return JSON.parse(savedUser)
+  } catch {
+    localStorage.removeItem('user')
+    return null
+  }
+}
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(getStoredUser)
   const [token, setToken] = useState(localStorage.getItem('token'))
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Temporalmente deshabilitado para debugging
-    // Verificar si hay token guardado al cargar
     const savedToken = localStorage.getItem('token')
+    const savedUser = getStoredUser()
+
     if (savedToken) {
       setToken(savedToken)
-      // TODO: Verificar token con el servidor
+      setUser(savedUser)
+    } else {
+      setUser(null)
     }
+
     setLoading(false)
   }, [])
 

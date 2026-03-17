@@ -64,10 +64,20 @@ cd server
 npm run dev
 ```
 
+O desde la raíz del proyecto:
+```
+npm run server
+```
+
 ### 6. Arranca el frontend
 ```
 cd ../client
 npm run dev
+```
+
+O desde la raíz del proyecto:
+```
+npm run client
 ```
 
 ## Notas
@@ -85,4 +95,3 @@ Próximamente se mejorará la arquitectura y modularidad del proyecto.
 const bcrypt = require('bcryptjs');
 bcrypt.hash('admin123', 10).then(console.log);
 ```
-

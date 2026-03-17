@@ -3,7 +3,6 @@ import { useAuth } from '../hooks/useAuth'
 import { useApi } from '../hooks/useApi'
 import Layout from '../components/layout/Layout'
 import Button from '../components/common/Button'
-import Input from '../components/common/Input'
 import './Dashboard.css'
 
 function Dashboard() {
@@ -59,7 +58,7 @@ function Dashboard() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      await api.post('/api/renovaciones', formData)
+      await post('/api/renovaciones', formData)
       setFormData({
         nombre_cliente: '',
         empresa: '',
@@ -82,7 +81,7 @@ function Dashboard() {
   const handleDelete = async (id) => {
     if (confirm('¿Estás seguro de que deseas eliminar esta renovación?')) {
       try {
-        await api.delete(`/api/renovaciones/${id}`)
+        await deleteRequest(`/api/renovaciones/${id}`)
         cargarRenovaciones()
       } catch (error) {
         console.error('Error al eliminar renovación:', error)
@@ -103,7 +102,7 @@ function Dashboard() {
     }
 
     try {
-      await api.post('/api/renovaciones/aplicar-ipc', {
+      await post('/api/renovaciones/aplicar-ipc', {
         ids: selectedIds,
         porcentaje: ipcPorcentaje
       })
