@@ -8,10 +8,12 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Temporalmente deshabilitado para debugging
     // Verificar si hay token guardado al cargar
     const savedToken = localStorage.getItem('token')
     if (savedToken) {
       setToken(savedToken)
+      // TODO: Verificar token con el servidor
     }
     setLoading(false)
   }, [])
