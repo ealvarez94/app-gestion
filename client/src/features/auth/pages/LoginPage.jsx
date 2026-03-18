@@ -34,7 +34,7 @@ function LoginPage() {
       <div className="login-card">
         <div className="login-header">
           <img src={logo} alt="Logo" className="login-logo" />
-          <h1>Gestión de Renovaciones</h1>
+          <h1>Oficina Digital</h1>
           <p>Inicia sesión para continuar</p>
         </div>
 
@@ -73,11 +73,12 @@ function LoginPage() {
           </Button>
         </form>
 
-        <div className="login-footer">
-          <p><strong>Credenciales por defecto:</strong></p>
-          <p>Usuario: <code>admin</code></p>
-          <p>Contraseña: <code>nuevaClave123</code></p>
-        </div>
+        {import.meta.env.DEV && (
+          <div className="login-footer">
+            <p><strong>Entorno local:</strong></p>
+            <p>Configura un usuario admin en la base de datos antes de iniciar sesión.</p>
+          </div>
+        )}
       </div>
     </div>
   )

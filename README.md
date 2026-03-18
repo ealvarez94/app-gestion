@@ -51,21 +51,42 @@ DB_USER=root
 DB_PASSWORD=
 DB_NAME=renovaciones
 DB_PORT=3306
-JWT_SECRET=pon_aqui_una_clave_larga_y_segura
+JWT_SECRET=
+JWT_EXPIRES_IN=24h
 PORT=5000
 CORS_ORIGIN=http://localhost:3000
+ADMIN_USERNAME=
+ADMIN_PASSWORD=
+```
+
+Para generar un `JWT_SECRET` fuerte:
+
+```bash
+openssl rand -base64 48
 ```
 
 ### 3. Crear o preparar la base de datos
 
 - Crear una base vacia y luego ejecutar el inicializador:
+ - Crear una base vacia y luego ejecutar el inicializador:
 
 ```bash
 cd server
 node init-db.js
 ```
 
-Ese script crea la tabla `usuarios` y, si no existe, el usuario `admin`.
+Ese script crea la tabla `usuarios`. El usuario administrador ya no se crea por defecto.
+
+### 4. Crear el usuario administrador inicial
+
+Puedes bootstrapear el admin con variables de entorno:
+
+```bash
+cd server
+ADMIN_USERNAME=admin ADMIN_PASSWORD=una-clave-segura npm run bootstrap:admin
+```
+
+En despliegue, si defines `ADMIN_USERNAME` y `ADMIN_PASSWORD` en el entorno del backend, la app los procesará automáticamente al arrancar y creará o actualizará ese usuario. Cuando termines el bootstrap inicial, conviene eliminar `ADMIN_PASSWORD` del entorno para no reescribir la contraseña en cada reinicio.
 
 ## Desarrollo
 
@@ -183,9 +204,18 @@ DB_USER=tu_usuario
 DB_PASSWORD=tu_password
 DB_NAME=tu_base_de_datos
 DB_PORT=3306
-JWT_SECRET=una_clave_muy_larga_y_segura
+JWT_SECRET=resultado_de_openssl_rand_base64_48
+JWT_EXPIRES_IN=24h
 CORS_ORIGIN=https://app.tudominio.com
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=una-clave-inicial-segura
 ```
+
+Notas de release:
+
+- En producción, `JWT_SECRET` debe tener al menos 32 caracteres.
+- En producción, configura `CORS_ORIGIN` explícitamente.
+- Tras el primer despliegue y bootstrap del admin, elimina `ADMIN_PASSWORD` si no quieres que el backend reescriba la contraseña en cada arranque.
 
 ### Automatizacion
 

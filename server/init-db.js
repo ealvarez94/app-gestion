@@ -1,7 +1,5 @@
 import mysql from 'mysql2/promise'
-import bcrypt from 'bcryptjs'
 import { env } from './src/config/env.js'
-import { DEFAULT_ADMIN_USERNAME } from './src/modules/users/users.constants.js'
 
 async function initializeDatabase() {
   const connection = await mysql.createConnection({
@@ -28,23 +26,6 @@ async function initializeDatabase() {
       )
     `)
     console.log('Tabla usuarios lista')
-
-    // Crear usuario por defecto si no existe
-    const [users] = await connection.execute(
-      'SELECT * FROM usuarios WHERE username = ?',
-      [DEFAULT_ADMIN_USERNAME]
-    )
-
-    if (users.length === 0) {
-      const hashedPassword = await bcrypt.hash('admin123', 10)
-      await connection.execute(
-        'INSERT INTO usuarios (username, password_hash) VALUES (?, ?)',
-        [DEFAULT_ADMIN_USERNAME, hashedPassword]
-      )
-      console.log('Usuario admin creado (contraseña: admin123)')
-    } else {
-      console.log('Usuario admin ya existe')
-    }
 
     console.log('Base de datos inicializada correctamente')
   } catch (error) {

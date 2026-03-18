@@ -1,6 +1,6 @@
 import cors from 'cors'
 import express from 'express'
-import { env } from './config/env.js'
+import { env, getAllowedCorsOrigins } from './config/env.js'
 import authRoutes from './modules/auth/auth.routes.js'
 import estadisticasRoutes from './modules/estadisticas/estadisticas.routes.js'
 import renovacionesRoutes from './modules/renovaciones/renovaciones.routes.js'
@@ -11,20 +11,20 @@ import {
 
 const app = express()
 
-const allowedOrigins = env.CORS_ORIGIN
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean)
+const allowedOrigins = getAllowedCorsOrigins()
+const allowAnyOrigin = env.NODE_ENV !== 'production' && allowedOrigins.length === 0
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+    if (!origin || allowAnyOrigin || allowedOrigins.includes(origin)) {
       callback(null, true)
       return
     }
 
     callback(new Error('Origen no permitido por CORS'))
-  }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }))
 app.use(express.json())
 

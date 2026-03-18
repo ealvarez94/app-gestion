@@ -1,5 +1,5 @@
 import pool from '../../config/db.js'
-import { DEFAULT_ADMIN_USERNAME, USERS_TABLE } from './users.constants.js'
+import { USERS_TABLE } from './users.constants.js'
 
 export const findUserByUsername = async (username) => {
   const [users] = await pool.execute(
@@ -19,6 +19,11 @@ export const updateUserPasswordByUsername = async (username, passwordHash) => {
   return result.affectedRows > 0
 }
 
-export const updateAdminPassword = async (passwordHash) => {
-  return updateUserPasswordByUsername(DEFAULT_ADMIN_USERNAME, passwordHash)
+export const createUser = async ({ username, passwordHash }) => {
+  const [result] = await pool.execute(
+    `INSERT INTO ${USERS_TABLE} (username, password_hash) VALUES (?, ?)`,
+    [username, passwordHash]
+  )
+
+  return result.insertId
 }

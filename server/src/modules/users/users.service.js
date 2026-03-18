@@ -1,19 +1,22 @@
+import { env } from '../../config/env.js'
 import { ApiError } from '../../shared/errors/api-error.js'
 import {
   DEFAULT_ADMIN_USERNAME
 } from './users.constants.js'
 import {
+  createUser,
   findUserByUsername,
-  updateAdminPassword,
   updateUserPasswordByUsername
 } from './users.repository.js'
+
+const getAdminUsername = () => env.ADMIN_USERNAME || DEFAULT_ADMIN_USERNAME
 
 export const getUserByUsername = async (username) => {
   return findUserByUsername(username)
 }
 
 export const ensureAdminUserExists = async () => {
-  const adminUser = await findUserByUsername(DEFAULT_ADMIN_USERNAME)
+  const adminUser = await findUserByUsername(getAdminUsername())
 
   if (!adminUser) {
     throw new ApiError(404, 'Usuario admin no encontrado')
@@ -23,7 +26,7 @@ export const ensureAdminUserExists = async () => {
 }
 
 export const changeAdminPassword = async (passwordHash) => {
-  return updateAdminPassword(passwordHash)
+  return updateUserPasswordByUsername(getAdminUsername(), passwordHash)
 }
 
 export const changeUserPassword = async ({ username, passwordHash }) => {
@@ -34,4 +37,24 @@ export const changeUserPassword = async ({ username, passwordHash }) => {
   }
 
   return updated
+}
+
+export const bootstrapAdminUser = async ({ username = getAdminUsername(), passwordHash }) => {
+  const existingUser = await findUserByUsername(username)
+
+  if (!existingUser) {
+    await createUser({ username, passwordHash })
+
+    return {
+      username,
+      action: 'created'
+    }
+  }
+
+  await updateUserPasswordByUsername(username, passwordHash)
+
+  return {
+    username,
+    action: 'updated'
+  }
 }
