@@ -1,6 +1,5 @@
 import axios from 'axios'
-
-const API_BASE_URL = 'http://localhost:5000'
+import { API_BASE_URL } from '../config/env'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -31,7 +30,7 @@ api.interceptors.response.use(
       // Token inválido o expirado
       localStorage.removeItem('token')
       localStorage.removeItem('user')
-      window.location.href = '/login'
+      window.location.href = '/'
     }
     return Promise.reject(error)
   }

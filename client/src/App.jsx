@@ -1,7 +1,7 @@
-import { useAuth } from './AuthContext'
-import Login from './Login'
-import Dashboard from './Dashboard'
-import './App.css'
+import { useAuth } from './hooks/useAuth'
+import RenovacionesDashboardPage from './features/admin/renovaciones/pages/RenovacionesDashboardPage'
+import LoginPage from './features/auth/pages/LoginPage'
+import './styles/App.css'
 
 function App() {
   const { isAuthenticated, loading } = useAuth()
@@ -21,7 +21,7 @@ function App() {
     )
   }
 
-  return isAuthenticated ? <Dashboard /> : <Login />
+  return isAuthenticated ? <RenovacionesDashboardPage /> : <LoginPage />
 }
 
 export default App

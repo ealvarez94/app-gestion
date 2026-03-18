@@ -1,0 +1,11 @@
+{
+  "name": "gestion-renovaciones",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "server": "npm --prefix server run dev",
+    "server:start": "npm --prefix server start",
+    "client": "npm --prefix client run dev"
+  }
+}
