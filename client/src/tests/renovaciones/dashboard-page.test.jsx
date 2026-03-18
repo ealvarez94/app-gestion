@@ -36,9 +36,26 @@ describe('RenovacionesDashboardPage', () => {
     vi.clearAllMocks()
     window.alert = vi.fn()
     window.confirm = vi.fn(() => true)
+    window.HTMLElement.prototype.scrollIntoView = vi.fn()
+    window.requestAnimationFrame = vi.fn((callback) => {
+      callback()
+      return 1
+    })
 
     useRenovacionesMock.mockReturnValue({
-      renovaciones: [{ id: 1, nombre_cliente: 'Acme', fecha_renovacion: '2026-03-18' }],
+      renovaciones: [{
+        id: 1,
+        nombre_cliente: 'Acme',
+        empresa: 'Acme Corp',
+        servicios_contratados: 'Hosting',
+        fecha_renovacion: '2026-03-18',
+        precio: '120.00',
+        email: 'acme@example.com',
+        telefono: '123456789',
+        giro_bancario: 1,
+        b_flag: 0,
+        comentarios: 'Cliente prioritario'
+      }],
       overallSummary: {
         totalFacturacion: 12847,
         renovacionesCount: 1234
@@ -63,17 +80,20 @@ describe('RenovacionesDashboardPage', () => {
       selectedIds: [],
       ipcPorcentaje: 3.5,
       showForm: false,
+      editingRenovacionId: null,
       loading: false,
       error: '',
       setFilter: vi.fn(),
       setIpcPorcentaje: vi.fn(),
-      setShowForm: vi.fn(),
       updateFormField: vi.fn(),
       submitRenovacion: vi.fn(),
       removeRenovacion: vi.fn(),
       toggleRenovacionSelection: vi.fn(),
       toggleSelectAll: vi.fn(),
-      applyIpc: vi.fn()
+      applyIpc: vi.fn(),
+      hideForm: vi.fn(),
+      startCreatingRenovacion: vi.fn(),
+      startEditingRenovacion: vi.fn()
     })
   })
 
@@ -87,6 +107,7 @@ describe('RenovacionesDashboardPage', () => {
     expect(screen.getByText('1.234 renovaciones')).toBeInTheDocument()
     expect(screen.getByText('120,00')).toBeInTheDocument()
     expect(screen.getByText('Acme')).toBeInTheDocument()
+    expect(screen.getByText('Hosting')).toBeInTheDocument()
   })
 
   it('muestra el error cuando el hook lo expone', () => {
@@ -112,6 +133,32 @@ describe('RenovacionesDashboardPage', () => {
     expect(screen.getByText('Crear Renovación')).toBeInTheDocument()
   })
 
+  it('hace scroll suave al formulario cuando se abre', () => {
+    useRenovacionesMock.mockReturnValueOnce({
+      ...useRenovacionesMock(),
+      showForm: true
+    })
+
+    renderDashboard()
+
+    expect(window.HTMLElement.prototype.scrollIntoView).toHaveBeenCalledWith({
+      behavior: 'smooth',
+      block: 'start'
+    })
+  })
+
+  it('muestra el formulario en modo edición cuando hay una renovación activa', () => {
+    useRenovacionesMock.mockReturnValueOnce({
+      ...useRenovacionesMock(),
+      showForm: true,
+      editingRenovacionId: 1
+    })
+
+    renderDashboard()
+
+    expect(screen.getByText('Guardar Cambios')).toBeInTheDocument()
+  })
+
   it('lanza la acción de aplicar IPC y muestra alerta de éxito', async () => {
     const user = userEvent.setup()
     const applyIpcMock = vi.fn().mockResolvedValue(undefined)
@@ -128,5 +175,40 @@ describe('RenovacionesDashboardPage', () => {
 
     expect(applyIpcMock).toHaveBeenCalled()
     expect(window.alert).toHaveBeenCalledWith('IPC del 3.5% aplicado exitosamente')
+  })
+
+  it('lanza la acción de editar desde la tabla', async () => {
+    const user = userEvent.setup()
+    const startEditingRenovacionMock = vi.fn()
+
+    useRenovacionesMock.mockReturnValueOnce({
+      ...useRenovacionesMock(),
+      startEditingRenovacion: startEditingRenovacionMock
+    })
+
+    renderDashboard()
+
+    await user.click(screen.getByRole('button', { name: 'Editar Acme' }))
+
+    expect(startEditingRenovacionMock).toHaveBeenCalledWith(expect.objectContaining({
+      id: 1,
+      nombre_cliente: 'Acme',
+      empresa: 'Acme Corp',
+      servicios_contratados: 'Hosting',
+      fecha_renovacion: '2026-03-18'
+    }))
+  })
+
+  it('muestra la información ampliada al desplegar un cliente', async () => {
+    const user = userEvent.setup()
+
+    renderDashboard()
+
+    await user.click(screen.getByRole('button', { name: 'Ver detalle de Acme' }))
+
+    expect(screen.getByText('acme@example.com')).toBeInTheDocument()
+    expect(screen.getByText('123456789')).toBeInTheDocument()
+    expect(screen.getByText('Cliente prioritario')).toBeInTheDocument()
+    expect(screen.getByText('Sí')).toBeInTheDocument()
   })
 })

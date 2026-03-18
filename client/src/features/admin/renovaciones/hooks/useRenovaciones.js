@@ -3,12 +3,16 @@ import {
   DEFAULT_IPC_PERCENTAGE,
   INITIAL_FILTERS
 } from '../constants'
-import { getEmptyRenovacionForm } from '../utils'
+import {
+  buildRenovacionFormFromData,
+  getEmptyRenovacionForm
+} from '../utils'
 import {
   applyRenovacionesIpc,
   createRenovacion,
   deleteRenovacion,
-  getRenovaciones
+  getRenovaciones,
+  updateRenovacion
 } from '../services/renovacionesService'
 
 export const useRenovaciones = () => {
@@ -22,6 +26,7 @@ export const useRenovaciones = () => {
   const [selectedIds, setSelectedIds] = useState([])
   const [ipcPorcentaje, setIpcPorcentaje] = useState(DEFAULT_IPC_PERCENTAGE)
   const [showForm, setShowForm] = useState(false)
+  const [editingRenovacionId, setEditingRenovacionId] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -72,10 +77,32 @@ export const useRenovaciones = () => {
     setFormData(getEmptyRenovacionForm())
   }
 
-  const submitRenovacion = async () => {
-    await createRenovacion(formData)
-    resetForm()
+  const hideForm = () => {
     setShowForm(false)
+    setEditingRenovacionId(null)
+    resetForm()
+  }
+
+  const startCreatingRenovacion = () => {
+    setEditingRenovacionId(null)
+    resetForm()
+    setShowForm(true)
+  }
+
+  const startEditingRenovacion = (renovacion) => {
+    setEditingRenovacionId(renovacion.id)
+    setFormData(buildRenovacionFormFromData(renovacion))
+    setShowForm(true)
+  }
+
+  const submitRenovacion = async () => {
+    if (editingRenovacionId) {
+      await updateRenovacion(editingRenovacionId, formData)
+    } else {
+      await createRenovacion(formData)
+    }
+
+    hideForm()
     await Promise.all([loadRenovaciones(), loadOverallSummary()])
   }
 
@@ -131,11 +158,11 @@ export const useRenovaciones = () => {
     selectedIds,
     ipcPorcentaje,
     showForm,
+    editingRenovacionId,
     loading,
     error,
     setFilter,
     setIpcPorcentaje,
-    setShowForm,
     updateFormField,
     submitRenovacion,
     removeRenovacion,
@@ -143,6 +170,9 @@ export const useRenovaciones = () => {
     toggleSelectAll,
     applyIpc,
     resetForm,
-    loadRenovaciones
+    loadRenovaciones,
+    hideForm,
+    startCreatingRenovacion,
+    startEditingRenovacion
   }
 }

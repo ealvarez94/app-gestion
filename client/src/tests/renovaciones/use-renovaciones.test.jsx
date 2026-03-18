@@ -5,11 +5,13 @@ import { useRenovaciones } from '../../features/admin/renovaciones/hooks/useReno
 const {
   getRenovacionesMock,
   createRenovacionMock,
+  updateRenovacionMock,
   deleteRenovacionMock,
   applyRenovacionesIpcMock
 } = vi.hoisted(() => ({
   getRenovacionesMock: vi.fn(),
   createRenovacionMock: vi.fn(),
+  updateRenovacionMock: vi.fn(),
   deleteRenovacionMock: vi.fn(),
   applyRenovacionesIpcMock: vi.fn()
 }))
@@ -17,6 +19,7 @@ const {
 vi.mock('../../features/admin/renovaciones/services/renovacionesService', () => ({
   getRenovaciones: getRenovacionesMock,
   createRenovacion: createRenovacionMock,
+  updateRenovacion: updateRenovacionMock,
   deleteRenovacion: deleteRenovacionMock,
   applyRenovacionesIpc: applyRenovacionesIpcMock
 }))
@@ -95,7 +98,7 @@ describe('useRenovaciones', () => {
     })
 
     act(() => {
-      result.current.setShowForm(true)
+      result.current.startCreatingRenovacion()
       result.current.updateFormField({
         name: 'nombre_cliente',
         value: 'Cliente Nuevo',
@@ -124,6 +127,71 @@ describe('useRenovaciones', () => {
         email: 'cliente@nuevo.com'
       })
     )
+    expect(result.current.showForm).toBe(false)
+    expect(result.current.formData.nombre_cliente).toBe('')
+    expect(getRenovacionesMock).toHaveBeenCalledTimes(4)
+  })
+
+  it('permite editar una renovación existente y guarda los cambios', async () => {
+    const { result } = renderHook(() => useRenovaciones())
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    act(() => {
+      result.current.startEditingRenovacion({
+        id: 2,
+        nombre_cliente: 'Globex',
+        empresa: 'Globex Corp',
+        giro_bancario: 1,
+        b_flag: 0,
+        precio: '200.00',
+        fecha_renovacion: '2026-03-18T00:00:00.000Z',
+        comentarios: 'Comentario',
+        servicios_contratados: 'Hosting',
+        telefono: '123456789',
+        email: 'globex@example.com'
+      })
+    })
+
+    expect(result.current.editingRenovacionId).toBe(2)
+    expect(result.current.showForm).toBe(true)
+    expect(result.current.formData).toEqual({
+      nombre_cliente: 'Globex',
+      empresa: 'Globex Corp',
+      giro_bancario: 1,
+      b_flag: 0,
+      precio: '200.00',
+      fecha_renovacion: '2026-03-18',
+      comentarios: 'Comentario',
+      servicios_contratados: 'Hosting',
+      telefono: '123456789',
+      email: 'globex@example.com'
+    })
+
+    act(() => {
+      result.current.updateFormField({
+        name: 'empresa',
+        value: 'Globex Renovado',
+        type: 'text'
+      })
+    })
+
+    await act(async () => {
+      await result.current.submitRenovacion()
+    })
+
+    expect(updateRenovacionMock).toHaveBeenCalledWith(
+      2,
+      expect.objectContaining({
+        nombre_cliente: 'Globex',
+        empresa: 'Globex Renovado',
+        fecha_renovacion: '2026-03-18'
+      })
+    )
+    expect(createRenovacionMock).not.toHaveBeenCalled()
+    expect(result.current.editingRenovacionId).toBe(null)
     expect(result.current.showForm).toBe(false)
     expect(result.current.formData.nombre_cliente).toBe('')
     expect(getRenovacionesMock).toHaveBeenCalledTimes(4)
@@ -216,5 +284,41 @@ describe('useRenovaciones', () => {
     })
 
     expect(result.current.error).toBe('Error controlado')
+  })
+
+  it('permite cancelar una edición y limpiar el formulario', async () => {
+    const { result } = renderHook(() => useRenovaciones())
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    act(() => {
+      result.current.startEditingRenovacion({
+        id: 1,
+        nombre_cliente: 'Acme',
+        fecha_renovacion: '2026-03-18',
+        email: 'acme@example.com'
+      })
+    })
+
+    act(() => {
+      result.current.hideForm()
+    })
+
+    expect(result.current.editingRenovacionId).toBe(null)
+    expect(result.current.showForm).toBe(false)
+    expect(result.current.formData).toEqual({
+      nombre_cliente: '',
+      empresa: '',
+      giro_bancario: 0,
+      b_flag: 0,
+      precio: '',
+      fecha_renovacion: '',
+      comentarios: '',
+      servicios_contratados: '',
+      telefono: '',
+      email: ''
+    })
   })
 })

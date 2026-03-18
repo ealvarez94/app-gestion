@@ -11,6 +11,11 @@ export const createRenovacion = async (payload) => {
   return data
 }
 
+export const updateRenovacion = async (id, payload) => {
+  const { data } = await api.put(`/api/renovaciones/${id}`, payload)
+  return data
+}
+
 export const deleteRenovacion = async (id) => {
   const { data } = await api.delete(`/api/renovaciones/${id}`)
   return data

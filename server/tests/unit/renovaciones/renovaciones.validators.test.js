@@ -31,13 +31,12 @@ describe('renovaciones.validators', () => {
     expect(
       validateCreateRenovacionPayload({
         nombre_cliente: 'Acme',
-        fecha_renovacion: '2026-03-18',
-        email: 'cliente@acme.com'
+        fecha_renovacion: '2026-03-18'
       })
     ).toMatchObject({
       nombre_cliente: 'Acme',
       fecha_renovacion: '2026-03-18',
-      email: 'cliente@acme.com',
+      email: '',
       comentarios: '',
       servicios_contratados: ''
     })
@@ -46,7 +45,7 @@ describe('renovaciones.validators', () => {
   it('lanza error si faltan campos requeridos al crear', () => {
     expect(() => validateCreateRenovacionPayload({ nombre_cliente: 'Acme' })).toThrow(ApiError)
     expect(() => validateCreateRenovacionPayload({ nombre_cliente: 'Acme' })).toThrow(
-      'Nombre cliente, fecha renovación y email son requeridos'
+      'Nombre cliente y fecha renovación son requeridos'
     )
   })
 
