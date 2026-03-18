@@ -11,7 +11,8 @@ import Button from '../../../../components/common/Button'
 function RenovacionesDashboardPage() {
   const {
     renovaciones,
-    totalFacturacion,
+    overallSummary,
+    filteredSummary,
     filter,
     formData,
     selectedIds,
@@ -70,8 +71,8 @@ function RenovacionesDashboardPage() {
         {error && <div className="error-message">{error}</div>}
 
         <FacturacionSummary
-          totalFacturacion={totalFacturacion}
-          renovacionesCount={renovaciones.length}
+          overallSummary={overallSummary}
+          filteredSummary={filteredSummary}
         />
 
         <RenovacionesFilters

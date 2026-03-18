@@ -39,7 +39,14 @@ describe('RenovacionesDashboardPage', () => {
 
     useRenovacionesMock.mockReturnValue({
       renovaciones: [{ id: 1, nombre_cliente: 'Acme', fecha_renovacion: '2026-03-18' }],
-      totalFacturacion: '120.00',
+      overallSummary: {
+        totalFacturacion: 12847,
+        renovacionesCount: 1234
+      },
+      filteredSummary: {
+        totalFacturacion: 120,
+        renovacionesCount: 1
+      },
       filter: { search: '', mes: '', year: '' },
       formData: {
         nombre_cliente: '',
@@ -74,7 +81,11 @@ describe('RenovacionesDashboardPage', () => {
     renderDashboard()
 
     expect(screen.getByText('Bienvenido, admin')).toBeInTheDocument()
-    expect(screen.getByText('Total de Facturación')).toBeInTheDocument()
+    expect(screen.getByText('Total general')).toBeInTheDocument()
+    expect(screen.getByText('Resultado actual')).toBeInTheDocument()
+    expect(screen.getByText('12.847,00')).toBeInTheDocument()
+    expect(screen.getByText('1.234 renovaciones')).toBeInTheDocument()
+    expect(screen.getByText('120,00')).toBeInTheDocument()
     expect(screen.getByText('Acme')).toBeInTheDocument()
   })
 
