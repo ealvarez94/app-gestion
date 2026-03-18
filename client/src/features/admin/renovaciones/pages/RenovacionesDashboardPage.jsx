@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import FacturacionSummary from '../components/FacturacionSummary'
 import IpcPanel from '../components/IpcPanel'
 import RenovacionForm from '../components/RenovacionForm'
@@ -11,24 +12,42 @@ import Button from '../../../../components/common/Button'
 function RenovacionesDashboardPage() {
   const {
     renovaciones,
-    totalFacturacion,
+    overallSummary,
+    filteredSummary,
     filter,
     formData,
     selectedIds,
     ipcPorcentaje,
     showForm,
+    editingRenovacionId,
     loading,
     error,
     setFilter,
     setIpcPorcentaje,
-    setShowForm,
     updateFormField,
     submitRenovacion,
     removeRenovacion,
     toggleRenovacionSelection,
     toggleSelectAll,
-    applyIpc
+    applyIpc,
+    hideForm,
+    startCreatingRenovacion,
+    startEditingRenovacion
   } = useRenovaciones()
+  const formContainerRef = useRef(null)
+
+  useEffect(() => {
+    if (!showForm || !formContainerRef.current) {
+      return
+    }
+
+    requestAnimationFrame(() => {
+      formContainerRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
+    })
+  }, [showForm])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -36,7 +55,7 @@ function RenovacionesDashboardPage() {
     try {
       await submitRenovacion()
     } catch (err) {
-      console.error('Error al crear renovación:', err)
+      console.error('Error al guardar renovación:', err)
     }
   }
 
@@ -70,8 +89,8 @@ function RenovacionesDashboardPage() {
         {error && <div className="error-message">{error}</div>}
 
         <FacturacionSummary
-          totalFacturacion={totalFacturacion}
-          renovacionesCount={renovaciones.length}
+          overallSummary={overallSummary}
+          filteredSummary={filteredSummary}
         />
 
         <RenovacionesFilters
@@ -89,24 +108,36 @@ function RenovacionesDashboardPage() {
         />
 
         <Button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => {
+            if (showForm) {
+              hideForm()
+              return
+            }
+
+            startCreatingRenovacion()
+          }}
           variant="primary"
         >
           {showForm ? '✖ Cancelar' : '➕ Nueva Renovación'}
         </Button>
 
         {showForm && (
-          <RenovacionForm
-            formData={formData}
-            onInputChange={(event) => updateFormField(event.target)}
-            onSubmit={handleSubmit}
-          />
+          <div ref={formContainerRef} className="renovacion-form-wrapper">
+            <RenovacionForm
+              formData={formData}
+              isEditing={Boolean(editingRenovacionId)}
+              onCancel={hideForm}
+              onInputChange={(event) => updateFormField(event.target)}
+              onSubmit={handleSubmit}
+            />
+          </div>
         )}
 
         <RenovacionesTable
           renovaciones={renovaciones}
           loading={loading}
           selectedIds={selectedIds}
+          onEdit={startEditingRenovacion}
           onToggleSelectAll={toggleSelectAll}
           onToggleSelection={toggleRenovacionSelection}
           onDelete={handleDelete}

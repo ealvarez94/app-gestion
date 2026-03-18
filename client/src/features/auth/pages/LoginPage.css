@@ -3,7 +3,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #f6f7fb 0%, #eef1f8 100%);
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.1), transparent 32%),
+    linear-gradient(135deg, #c84b4b 0%, #933b48 100%);
   padding: 20px;
 }
 
@@ -23,13 +25,13 @@
 }
 
 .login-logo {
-  width: 120px;
+  width: 240px;
   height: auto;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .login-header h1 {
-  color: #2d3748;
+  color: #1f2937;
   font-size: 1.875rem;
   font-weight: 700;
   margin-bottom: 8px;

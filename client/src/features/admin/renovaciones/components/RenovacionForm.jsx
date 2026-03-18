@@ -1,6 +1,12 @@
 import Button from '../../../../components/common/Button'
 
-const RenovacionForm = ({ formData, onInputChange, onSubmit }) => {
+const RenovacionForm = ({
+  formData,
+  isEditing,
+  onCancel,
+  onInputChange,
+  onSubmit
+}) => {
   return (
     <form onSubmit={onSubmit} className="renovacion-form">
       <div className="form-row">
@@ -27,13 +33,12 @@ const RenovacionForm = ({ formData, onInputChange, onSubmit }) => {
 
       <div className="form-row">
         <div className="form-group">
-          <label>Email*</label>
+          <label>Email</label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={onInputChange}
-            required
           />
         </div>
         <div className="form-group">
@@ -115,9 +120,15 @@ const RenovacionForm = ({ formData, onInputChange, onSubmit }) => {
         />
       </div>
 
-      <Button type="submit" variant="primary">
-        Crear Renovación
-      </Button>
+      <div className="form-actions">
+        <Button type="submit" variant="primary">
+          {isEditing ? 'Guardar Cambios' : 'Crear Renovación'}
+        </Button>
+
+        <Button type="button" variant="secondary" onClick={onCancel}>
+          Cancelar
+        </Button>
+      </div>
     </form>
   )
 }

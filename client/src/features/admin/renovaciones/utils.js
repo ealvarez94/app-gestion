@@ -30,3 +30,26 @@ export const getEmptyRenovacionForm = () => ({
   telefono: '',
   email: ''
 })
+
+const normalizeCheckboxValue = (value) => (value ? 1 : 0)
+
+const normalizeDateValue = (value) => {
+  if (!value) {
+    return ''
+  }
+
+  return String(value).split('T')[0]
+}
+
+export const buildRenovacionFormFromData = (renovacion) => ({
+  nombre_cliente: renovacion.nombre_cliente || '',
+  empresa: renovacion.empresa || '',
+  giro_bancario: normalizeCheckboxValue(renovacion.giro_bancario),
+  b_flag: normalizeCheckboxValue(renovacion.b_flag),
+  precio: renovacion.precio || '',
+  fecha_renovacion: normalizeDateValue(renovacion.fecha_renovacion),
+  comentarios: renovacion.comentarios || '',
+  servicios_contratados: renovacion.servicios_contratados || '',
+  telefono: renovacion.telefono || '',
+  email: renovacion.email || ''
+})

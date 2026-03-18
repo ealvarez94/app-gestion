@@ -1,24 +1,32 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   DEFAULT_IPC_PERCENTAGE,
   INITIAL_FILTERS
 } from '../constants'
-import { getEmptyRenovacionForm } from '../utils'
+import {
+  buildRenovacionFormFromData,
+  getEmptyRenovacionForm
+} from '../utils'
 import {
   applyRenovacionesIpc,
   createRenovacion,
   deleteRenovacion,
-  getRenovaciones
+  getRenovaciones,
+  updateRenovacion
 } from '../services/renovacionesService'
 
 export const useRenovaciones = () => {
   const [renovaciones, setRenovaciones] = useState([])
-  const [totalFacturacion, setTotalFacturacion] = useState(0)
+  const [overallSummary, setOverallSummary] = useState({
+    totalFacturacion: 0,
+    renovacionesCount: 0
+  })
   const [filter, setFilter] = useState(INITIAL_FILTERS)
   const [formData, setFormData] = useState(getEmptyRenovacionForm)
   const [selectedIds, setSelectedIds] = useState([])
   const [ipcPorcentaje, setIpcPorcentaje] = useState(DEFAULT_IPC_PERCENTAGE)
   const [showForm, setShowForm] = useState(false)
+  const [editingRenovacionId, setEditingRenovacionId] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -29,7 +37,6 @@ export const useRenovaciones = () => {
     try {
       const data = await getRenovaciones(filter)
       setRenovaciones(data.renovaciones)
-      setTotalFacturacion(data.totalFacturacion)
     } catch (err) {
       setError(err.response?.data?.error || 'Error al cargar renovaciones')
     } finally {
@@ -37,9 +44,27 @@ export const useRenovaciones = () => {
     }
   }
 
+  const loadOverallSummary = async () => {
+    try {
+      const data = await getRenovaciones(INITIAL_FILTERS)
+
+      setOverallSummary({
+        totalFacturacion: Number.parseFloat(data.totalFacturacion || 0),
+        renovacionesCount: data.renovaciones.length
+      })
+    } catch (err) {
+      setError((currentError) => currentError || 'Error al cargar renovaciones')
+    }
+  }
+
   useEffect(() => {
+    setSelectedIds([])
     loadRenovaciones()
   }, [filter])
+
+  useEffect(() => {
+    loadOverallSummary()
+  }, [])
 
   const updateFormField = ({ name, value, type, checked }) => {
     setFormData((currentFormData) => ({
@@ -52,17 +77,39 @@ export const useRenovaciones = () => {
     setFormData(getEmptyRenovacionForm())
   }
 
-  const submitRenovacion = async () => {
-    await createRenovacion(formData)
-    resetForm()
+  const hideForm = () => {
     setShowForm(false)
-    await loadRenovaciones()
+    setEditingRenovacionId(null)
+    resetForm()
+  }
+
+  const startCreatingRenovacion = () => {
+    setEditingRenovacionId(null)
+    resetForm()
+    setShowForm(true)
+  }
+
+  const startEditingRenovacion = (renovacion) => {
+    setEditingRenovacionId(renovacion.id)
+    setFormData(buildRenovacionFormFromData(renovacion))
+    setShowForm(true)
+  }
+
+  const submitRenovacion = async () => {
+    if (editingRenovacionId) {
+      await updateRenovacion(editingRenovacionId, formData)
+    } else {
+      await createRenovacion(formData)
+    }
+
+    hideForm()
+    await Promise.all([loadRenovaciones(), loadOverallSummary()])
   }
 
   const removeRenovacion = async (id) => {
     await deleteRenovacion(id)
     setSelectedIds((currentIds) => currentIds.filter((currentId) => currentId !== id))
-    await loadRenovaciones()
+    await Promise.all([loadRenovaciones(), loadOverallSummary()])
   }
 
   const toggleRenovacionSelection = (id) => {
@@ -88,22 +135,34 @@ export const useRenovaciones = () => {
     })
 
     setSelectedIds([])
-    await loadRenovaciones()
+    await Promise.all([loadRenovaciones(), loadOverallSummary()])
   }
+
+  const filteredSummary = useMemo(() => {
+    const total = renovaciones.reduce((accumulator, renovacion) => {
+      return accumulator + Number.parseFloat(renovacion.precio || 0)
+    }, 0)
+
+    return {
+      totalFacturacion: total,
+      renovacionesCount: renovaciones.length
+    }
+  }, [renovaciones])
 
   return {
     renovaciones,
-    totalFacturacion,
+    overallSummary,
+    filteredSummary,
     filter,
     formData,
     selectedIds,
     ipcPorcentaje,
     showForm,
+    editingRenovacionId,
     loading,
     error,
     setFilter,
     setIpcPorcentaje,
-    setShowForm,
     updateFormField,
     submitRenovacion,
     removeRenovacion,
@@ -111,6 +170,9 @@ export const useRenovaciones = () => {
     toggleSelectAll,
     applyIpc,
     resetForm,
-    loadRenovaciones
+    loadRenovaciones,
+    hideForm,
+    startCreatingRenovacion,
+    startEditingRenovacion
   }
 }

@@ -54,8 +54,8 @@ export const validateRenovacionesFilters = (filters) => {
 export const validateCreateRenovacionPayload = (payload) => {
   const renovacion = sanitizeRenovacionPayload(payload)
 
-  if (!renovacion.nombre_cliente || !renovacion.fecha_renovacion || !renovacion.email) {
-    throw new ApiError(400, 'Nombre cliente, fecha renovación y email son requeridos')
+  if (!renovacion.nombre_cliente || !renovacion.fecha_renovacion) {
+    throw new ApiError(400, 'Nombre cliente y fecha renovación son requeridos')
   }
 
   return renovacion
