@@ -22,7 +22,6 @@ Aplicacion fullstack para gestionar renovaciones de clientes, con backend en Nod
 │   ├── change-password.js  # Cambio de password del admin
 │   ├── .env.example        # Plantilla de variables de entorno
 │   └── package.json
-├── renovaciones.sql
 └── START.sh
 ```
 
@@ -57,9 +56,6 @@ PORT=5000
 
 ### 3. Crear o preparar la base de datos
 
-Tienes dos opciones:
-
-- Importar [renovaciones.sql](/home/enol/Escritorio/Gestion renovaciones/renovaciones.sql) si ya contiene los datos que quieres usar.
 - Crear una base vacia y luego ejecutar el inicializador:
 
 ```bash
