@@ -4,10 +4,12 @@ import { requireEnv } from '../../config/env.js'
 import { ApiError } from '../../shared/errors/api-error.js'
 import { findUserByUsername } from '../users/users.repository.js'
 
-const jwtSecret = requireEnv('JWT_SECRET')
-
 export const generateToken = (userId, username) => {
-  return jwt.sign({ userId, username }, jwtSecret, { expiresIn: '24h' })
+  return jwt.sign(
+    { userId, username },
+    requireEnv('JWT_SECRET'),
+    { expiresIn: '24h' }
+  )
 }
 
 export const loginUser = async ({ username, password }) => {

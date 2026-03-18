@@ -1,8 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { requireEnv } from '../config/env.js'
 
-const jwtSecret = requireEnv('JWT_SECRET')
-
 export const authenticateToken = (req, res, next) => {
   const authHeader = req.headers.authorization
   const token = authHeader?.split(' ')[1]
@@ -11,7 +9,7 @@ export const authenticateToken = (req, res, next) => {
     return res.status(401).json({ error: 'Token no proporcionado' })
   }
 
-  jwt.verify(token, jwtSecret, (err, user) => {
+  jwt.verify(token, requireEnv('JWT_SECRET'), (err, user) => {
     if (err) {
       return res.status(403).json({ error: 'Token inválido o expirado' })
     }
