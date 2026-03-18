@@ -1,26 +1,21 @@
-dotenv.config()
-
 import mysql from 'mysql2/promise'
 import bcrypt from 'bcryptjs'
-import dotenv from 'dotenv'
-
-// Fuerza la carga del .env desde la carpeta actual del proyecto
-dotenv.config({ path: new URL('./.env', import.meta.url).pathname })
+import { env } from './src/config/env.js'
 
 async function initializeDatabase() {
   const connection = await mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
+    host: env.DB_HOST,
+    user: env.DB_USER,
+    password: env.DB_PASSWORD
   })
 
   try {
     // Crear base de datos si no existe
-    await connection.execute(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`)
-    console.log(`✅ Base de datos "${process.env.DB_NAME}" lista`)
+    await connection.execute(`CREATE DATABASE IF NOT EXISTS ${env.DB_NAME}`)
+    console.log(`Base de datos "${env.DB_NAME}" lista`)
 
     // Cambiar a la BD
-    await connection.execute(`USE ${process.env.DB_NAME}`)
+    await connection.execute(`USE ${env.DB_NAME}`)
 
     // Crear tabla de usuarios si no existe
     await connection.execute(`
@@ -31,7 +26,7 @@ async function initializeDatabase() {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `)
-    console.log('✅ Tabla usuarios lista')
+    console.log('Tabla usuarios lista')
 
     // Crear usuario por defecto si no existe
     const [users] = await connection.execute(
@@ -45,14 +40,14 @@ async function initializeDatabase() {
         'INSERT INTO usuarios (username, password_hash) VALUES (?, ?)',
         ['admin', hashedPassword]
       )
-      console.log('✅ Usuario admin creado (contraseña: admin123)')
+      console.log('Usuario admin creado (contraseña: admin123)')
     } else {
-      console.log('✅ Usuario admin ya existe')
+      console.log('Usuario admin ya existe')
     }
 
-    console.log('✅ Base de datos inicializada correctamente')
+    console.log('Base de datos inicializada correctamente')
   } catch (error) {
-    console.error('❌ Error al inicializar BD:', error.message)
+    console.error('Error al inicializar BD:', error.message)
   } finally {
     await connection.end()
   }

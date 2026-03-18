@@ -217,7 +217,7 @@ Verifica que existan:
 
 ### Login no funciona
 - Verifica que el servidor está en http://localhost:5000
-- Ejecuta `server/init-db.js`
+- Ejecuta `cd ../server && node init-db.js`
 
 ## 📚 Más Información
 
@@ -246,4 +246,3 @@ ISC
 ---
 
 **¿Dudas?** Revisa la documentación del servidor o contacta al equipo.
-

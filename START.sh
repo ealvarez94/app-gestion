@@ -44,14 +44,8 @@ cat << 'EOF'
      • Animaciones suaves
 
   ✅ DOCUMENTACIÓN
-     • README.md - Visión general
-     • CONFIGURACION.md - Setup paso a paso
-     • INICIO_RAPIDO.md - 5 minutos
-     • BRANDING.md - Personalización
-     • RESUMEN.md - Checklist completo
-     • ESTRUCTURA.md - Desglose del proyecto
-     • server/README.md - API documentation
-     • client/README.md - Frontend documentation
+     • README.md - Guía principal del proyecto
+     • server/.env.example - Plantilla de configuración backend
 
 ┌──────────────────────────────────────────────────────────────────┐
 │ 🚀 CÓMO EMPEZAR                                                   │
@@ -92,9 +86,9 @@ cat << 'EOF'
 └──────────────────────────────────────────────────────────────────┘
 
   SERVIDOR (Node.js + Express + MySQL)
-  ├─ server/server.js           ← API REST + endpoints
-  ├─ server/db.js               ← Conexión MySQL
-  ├─ server/auth.js             ← JWT middleware
+  ├─ server/src/index.js        ← Punto de entrada backend
+  ├─ server/src/app.js          ← Configuración de Express
+  ├─ server/src/modules/        ← Módulos por dominio
   ├─ server/init-db.js          ← Inicializador BD
   └─ server/.env                ← Variables de entorno
 
@@ -109,11 +103,7 @@ cat << 'EOF'
 
   DOCUMENTACIÓN
   ├─ README.md                  ← Documentación general
-  ├─ CONFIGURACION.md           ← Setup detallado
-  ├─ INICIO_RAPIDO.md           ← Quick start
-  ├─ BRANDING.md                ← Personalización
-  ├─ RESUMEN.md                 ← Checklist completo
-  └─ ESTRUCTURA.md              ← Desglose del proyecto
+  └─ server/.env.example        ← Ejemplo de configuración
 
   BASE DE DATOS
   └─ renovaciones.sql           ← SQL con todos los datos
@@ -198,13 +188,8 @@ cat << 'EOF'
 │ 📚 DOCUMENTACIÓN DISPONIBLE                                      │
 └──────────────────────────────────────────────────────────────────┘
 
-  COMENZAR      → Lee INICIO_RAPIDO.md (5 minutos)
-  INSTALAR      → Lee CONFIGURACION.md (paso a paso)
-  API           → Lee server/README.md
-  FRONTEND      → Lee client/README.md
-  PERSONALIZAR  → Lee BRANDING.md
-  CHECKLIST     → Lee RESUMEN.md
-  ESTRUCTURA    → Lee ESTRUCTURA.md
+  GENERAL       → Lee README.md
+  CONFIGURAR    → Usa server/.env.example como plantilla
 
 ┌──────────────────────────────────────────────────────────────────┐
 │ ✅ PRÓXIMOS PASOS                                                │
@@ -253,7 +238,7 @@ echo ""
 echo "📍 Ubicación: /home/enol/Escritorio/Gestion renovaciones"
 echo ""
 echo "🚀 Para comenzar con la Guía Rápida:"
-echo "   cat INICIO_RAPIDO.md"
+echo "   cat README.md"
 echo ""
 echo "📖 Para documentación completa:"
 echo "   cat README.md"
