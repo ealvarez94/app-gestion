@@ -45,6 +45,7 @@ cp server/.env.example server/.env
 Variables necesarias:
 
 ```env
+NODE_ENV=development
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=
@@ -52,6 +53,7 @@ DB_NAME=renovaciones
 DB_PORT=3306
 JWT_SECRET=pon_aqui_una_clave_larga_y_segura
 PORT=5000
+CORS_ORIGIN=http://localhost:3000
 ```
 
 ### 3. Crear o preparar la base de datos
@@ -132,3 +134,71 @@ Estadisticas:
 - El archivo `server/.env` no se sube al repositorio.
 - `server/.env.example` sirve como plantilla de configuracion.
 - El backend ahora esta modularizado por capas: rutas, controladores, servicios y repositorios.
+
+## Despliegue recomendado
+
+Para practicar un flujo parecido a produccion con bajo coste:
+
+- Frontend en Vercel
+- Backend en Render
+- Dominio propio con dos subdominios:
+  - `app.tudominio.com` para el frontend
+  - `api.tudominio.com` para el backend
+
+### Frontend
+
+Configura el proyecto `client` en Vercel y define:
+
+```env
+VITE_API_BASE_URL=https://api.tudominio.com
+```
+
+Build command:
+
+```bash
+npm run build
+```
+
+Output directory:
+
+```text
+dist
+```
+
+### Backend
+
+Configura el proyecto `server` en Render con:
+
+- Root directory: `server`
+- Build command: `npm install`
+- Start command: `npm start`
+
+Variables recomendadas:
+
+```env
+NODE_ENV=production
+PORT=10000
+DB_HOST=tu_host_mysql
+DB_USER=tu_usuario
+DB_PASSWORD=tu_password
+DB_NAME=tu_base_de_datos
+DB_PORT=3306
+JWT_SECRET=una_clave_muy_larga_y_segura
+CORS_ORIGIN=https://app.tudominio.com
+```
+
+### Automatizacion
+
+El repositorio incluye GitHub Actions en [ci.yml](/home/enol/Escritorio/Gestion renovaciones/.github/workflows/ci.yml) para:
+
+- tests del backend
+- tests del frontend
+- build del frontend
+
+Flujo recomendado:
+
+1. Trabajar en una rama
+2. Abrir PR
+3. Dejar que CI valide tests y build
+4. Hacer merge a `main`
+5. Dejar que Vercel y Render desplieguen automaticamente desde GitHub
