@@ -1,6 +1,6 @@
-import { useAuth } from './context/AuthContext'
-import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
+import { useAuth } from './hooks/useAuth'
+import RenovacionesDashboardPage from './features/admin/renovaciones/pages/RenovacionesDashboardPage'
+import LoginPage from './features/auth/pages/LoginPage'
 import './styles/App.css'
 
 function App() {
@@ -21,7 +21,7 @@ function App() {
     )
   }
 
-  return isAuthenticated ? <Dashboard /> : <Login />
+  return isAuthenticated ? <RenovacionesDashboardPage /> : <LoginPage />
 }
 
 export default App

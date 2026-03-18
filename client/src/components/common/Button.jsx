@@ -8,13 +8,20 @@ const Button = ({
   loading = false,
   onClick,
   type = 'button',
+  className = '',
   ...props
 }) => {
-  const className = `btn btn-${variant} btn-${size} ${loading ? 'btn-loading' : ''}`
+  const buttonClassName = [
+    'btn',
+    `btn-${variant}`,
+    `btn-${size}`,
+    loading ? 'btn-loading' : '',
+    className
+  ].filter(Boolean).join(' ')
 
   return (
     <button
-      className={className}
+      className={buttonClassName}
       disabled={disabled || loading}
       onClick={onClick}
       type={type}

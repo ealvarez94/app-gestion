@@ -1,17 +1,19 @@
 import { useState } from 'react'
-import { useAuth } from '../context/AuthContext'
-import './Login.css'
-import logo from '../assets/logotipo.png'
+import Button from '../../../components/common/Button'
+import Input from '../../../components/common/Input'
+import { useAuth } from '../../../hooks/useAuth'
+import logo from '../../../assets/logotipo.png'
+import './LoginPage.css'
 
-function Login() {
+function LoginPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async (event) => {
+    event.preventDefault()
     setError('')
     setLoading(true)
 
@@ -20,7 +22,7 @@ function Login() {
       if (!result.success) {
         setError(result.error)
       }
-    } catch (err) {
+    } catch {
       setError('Error al conectar con el servidor')
     } finally {
       setLoading(false)
@@ -39,35 +41,36 @@ function Login() {
         <form onSubmit={handleSubmit} className="login-form">
           {error && <div className="error-message">{error}</div>}
 
-          <div className="form-group">
-            <label htmlFor="username">Usuario</label>
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Ingresa tu usuario"
-              required
-              disabled={loading}
-            />
-          </div>
+          <Input
+            type="text"
+            id="username"
+            label="Usuario"
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+            placeholder="Ingresa tu usuario"
+            required
+            disabled={loading}
+          />
 
-          <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Ingresa tu contraseña"
-              required
-              disabled={loading}
-            />
-          </div>
+          <Input
+            type="password"
+            id="password"
+            label="Contraseña"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="Ingresa tu contraseña"
+            required
+            disabled={loading}
+          />
 
-          <button type="submit" className="btn-login" disabled={loading}>
-            {loading ? 'Conectando...' : 'Iniciar Sesión'}
-          </button>
+          <Button
+            type="submit"
+            className="btn-login"
+            disabled={loading}
+            loading={loading}
+          >
+            Iniciar Sesión
+          </Button>
         </form>
 
         <div className="login-footer">
@@ -80,4 +83,4 @@ function Login() {
   )
 }
 
-export default Login
+export default LoginPage

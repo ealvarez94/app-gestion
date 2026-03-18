@@ -1,3 +1,4 @@
+import { formatDecimal } from '../../shared/utils/format-decimal.js'
 import { getMonthlyStats } from './estadisticas.repository.js'
 
 export const getEstadisticasMensuales = async () => {
@@ -5,7 +6,7 @@ export const getEstadisticasMensuales = async () => {
 
   return stats.map((stat) => ({
     ...stat,
-    total: Number.parseFloat(stat.total || 0).toFixed(2),
-    promedio: Number.parseFloat(stat.promedio || 0).toFixed(2)
+    total: formatDecimal(stat.total),
+    promedio: formatDecimal(stat.promedio)
   }))
 }

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useState, useEffect } from 'react'
+import { loginRequest } from '../features/auth/services/authService'
 
 export const AuthContext = createContext()
 
@@ -38,20 +39,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const response = await fetch('http://localhost:5000/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Error al iniciar sesión')
-      }
-
-      const data = await response.json()
+      const data = await loginRequest({ username, password })
       setToken(data.token)
       setUser(data.user)
       localStorage.setItem('token', data.token)
@@ -59,7 +47,10 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true }
     } catch (error) {
-      return { success: false, error: error.message }
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Error al iniciar sesión'
+      }
     }
   }
 
@@ -77,12 +68,4 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   )
-}
-
-export const useAuth = () => {
-  const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error('useAuth debe usarse dentro de AuthProvider')
-  }
-  return context
 }

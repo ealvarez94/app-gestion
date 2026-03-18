@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { requireEnv } from '../../config/env.js'
 import { ApiError } from '../../shared/errors/api-error.js'
-import { findUserByUsername } from './auth.repository.js'
+import { findUserByUsername } from '../users/users.repository.js'
 
 const jwtSecret = requireEnv('JWT_SECRET')
 

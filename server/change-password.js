@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs'
 import readline from 'readline'
-import { updateAdminPassword } from './src/modules/auth/auth.repository.js'
+import { changeAdminPassword } from './src/modules/users/users.service.js'
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -25,7 +25,7 @@ async function changePassword() {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10)
 
-    const updated = await updateAdminPassword(hashedPassword)
+    const updated = await changeAdminPassword(hashedPassword)
 
     if (updated) {
       console.log('Contraseña actualizada correctamente')
