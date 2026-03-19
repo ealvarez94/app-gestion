@@ -9,6 +9,7 @@
     "server:start": "npm start",
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
+    "bootstrap:admin": "node src/startup/run-startup-tasks.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },

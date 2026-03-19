@@ -1,14 +1,14 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { requireEnv } from '../../config/env.js'
+import { env, getJwtSecret } from '../../config/env.js'
 import { ApiError } from '../../shared/errors/api-error.js'
 import { findUserByUsername } from '../users/users.repository.js'
 
 export const generateToken = (userId, username) => {
   return jwt.sign(
     { userId, username },
-    requireEnv('JWT_SECRET'),
-    { expiresIn: '24h' }
+    getJwtSecret(),
+    { expiresIn: env.JWT_EXPIRES_IN }
   )
 }
 

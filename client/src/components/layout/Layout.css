@@ -35,6 +35,12 @@
   height: auto;
   object-fit: contain;
   flex-shrink: 0;
+  background: #ffffff;
+  padding: 10px 14px;
+  border-radius: 18px;
+  box-shadow:
+    0 10px 24px rgba(74, 20, 32, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.85);
 }
 
 .header-brand-copy {

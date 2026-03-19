@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
           <div className="header-brand">
             <img src={logo} alt="Logotipo de la aplicación" className="header-logo" />
             <div className="header-brand-copy">
-              <h1 className="header-title">Gestión de Renovaciones</h1>
+              <h1 className="header-title">Oficina Digital</h1>
               <p className="header-subtitle">Panel administrativo</p>
             </div>
           </div>
